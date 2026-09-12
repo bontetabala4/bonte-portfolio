@@ -89,3 +89,25 @@ d'appel réseau, pas de clé API, ça marche tout de suite. Si tu veux un vrai
 assistant conversationnel, remplace le corps de `answer()` par un appel à
 l'API Anthropic ou OpenAI en donnant `PROFILE`, `PROJECTS`, `STACK` et
 `TIMELINE` comme contexte système.
+
+## Le formulaire de contact
+
+La page Contact a un vrai formulaire (nom, email, sujet, message).
+
+- Si le backend est joignable, le message est envoyé à `POST /api/contact`
+  et stocké dans `backend/messages.json` (un fichier JSON simple, pas une
+  vraie base de données — largement suffisant pour un portfolio).
+- Si le backend n'est pas lancé ou pas configuré, le formulaire ouvre
+  automatiquement le client mail de la personne avec le message pré-rempli,
+  pour que rien ne se perde silencieusement.
+
+**Important** : ceci n'envoie pas d'email automatiquement depuis le
+serveur — je n'ai pas d'identifiants SMTP ni de clé d'un service comme
+Resend/SendGrid à te fournir. Pour recevoir un vrai email à chaque message
+plutôt que de consulter `messages.json` à la main, deux options :
+1. Créer un compte gratuit sur [Resend](https://resend.com) ou
+   [SendGrid](https://sendgrid.com), récupérer une clé API, et l'appeler
+   depuis `save_message()` dans `backend/contact.py`.
+2. Utiliser un service tout-en-un côté frontend comme
+   [Formspree](https://formspree.io) ou [Web3Forms](https://web3forms.com)
+   à la place de l'appel à `/api/contact`.
