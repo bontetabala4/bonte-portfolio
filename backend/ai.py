@@ -40,73 +40,70 @@ def answer(question: str) -> dict:
     q = (question or "").strip().lower()
 
     if not q:
-        return {
-            "reply": "Je n'ai pas bien saisi votre question. Posez-moi une question sur le parcours de Bonte, ses projets récents ou ses technologies de prédilection.",
-            "intent": "empty"
-        }
+        return {"reply": "Signal vide reçu. Pose-moi une question sur le parcours, les projets ou la stack de Bonte.", "intent": "empty"}
 
     if any(g in q for g in GREETINGS):
         return {
-            "reply": f"Bonjour et bienvenue ! Je suis ATLAS, l'assistant virtuel de ce portfolio. Je peux vous renseigner sur les réalisations de Bonte, sa stack technique ou ses disponibilités. Que souhaitez-vous savoir ?",
+            "reply": f"Bonjour. Je suis ATLAS, l'assistant embarqué de ce portfolio. Demande-moi les projets, la stack, le parcours ou comment contacter {PROFILE['name'].split(' ')[0]}.",
             "intent": "greeting",
         }
 
-    if any(term in q for term in ["contact", "email", "mail", "téléphone", "telephone", "joindre", "ecrire"]):
+    if "contact" in q or "email" in q or "mail" in q or "téléphone" in q or "telephone" in q or "joindre" in q:
         return {
-            "reply": f"Vous pouvez joindre Bonte directement à {PROFILE['email']} ou par téléphone au {PROFILE['phone']}. Retrouvez également son travail sur GitHub ({PROFILE['github']}).",
+            "reply": f"Canal direct : {PROFILE['email']} · {PROFILE['phone']} · GitHub : {PROFILE['github']}",
             "intent": "contact",
         }
 
-    if any(term in q for term in ["stack", "techno", "langage", "compétence", "competence", "outils"]):
+    if "stack" in q or "techno" in q or "langage" in q or "compétence" in q or "competence" in q:
         return {
-            "reply": f"Côté technologies, Bonte s'appuie principalement sur {_stack_summary()}. Consultez l'onglet Compétences pour la vue d'ensemble complète.",
+            "reply": f"Cœur de stack : {_stack_summary()}. Détail complet disponible dans le module COMPÉTENCES.",
             "intent": "stack",
         }
 
     named_project = _project_by_keyword(q)
     if named_project:
         return {
-            "reply": f"Concernant le projet {named_project['name']} : {named_project['description']} Il a été conçu avec {', '.join(named_project['stack'])} (Statut : {named_project['status']}).",
+            "reply": f"{named_project['name']} — {named_project['description']} Stack : {', '.join(named_project['stack'])}. Statut : {named_project['status']}.",
             "intent": "project_detail",
         }
 
-    if any(term in q for term in ["projet", "travaux", "réalisation", "realisation", "portfolio"]):
+    if "projet" in q or "travaux" in q or "réalisation" in q or "realisation" in q:
         names = ", ".join(p["name"].split(" — ")[0] for p in PROJECTS[:4])
         return {
-            "reply": f"Parmi ses réalisations notables, on retrouve notamment : {names}. N'hésitez pas à demander des précisions sur un projet précis ou visiter l'onglet Travaux !",
+            "reply": f"Quatre systèmes phares en archive : {names}. Demande le nom d'un projet pour le détail.",
             "intent": "project_list",
         }
 
-    if any(term in q for term in ["expérience", "experience", "parcours", "stage", "carriere"]):
+    if "expérience" in q or "experience" in q or "parcours" in q or "stage" in q:
         latest = TIMELINE[0]
         return {
-            "reply": f"Dernièrement, Bonte a occupé le rôle de {latest['title']} chez {latest['org']} ({latest['when']}). Vous trouverez l'historique complet dans la section Parcours.",
+            "reply": f"Dernier poste enregistré : {latest['title']} — {latest['org']} ({latest['when']}). Chronologie complète dans le module PARCOURS.",
             "intent": "timeline",
         }
 
-    if any(term in q for term in ["formation", "diplôme", "diplome", "étude", "etude", "universite", "kadea"]):
+    if "formation" in q or "diplôme" in q or "diplome" in q or "étude" in q or "etude" in q:
         e = EDUCATION[0]
         return {
-            "reply": f"Bonte est diplômé d'une {e['title']} délivrée par l'{e['org']} ({e['meta']}), complétée par diverses certifications techniques.",
+            "reply": f"{e['title']} — {e['org']} ({e['meta']}). Formations et certifications listées dans le module FORMATION.",
             "intent": "education",
         }
 
-    if any(term in q for term in ["qui es-tu", "qui es tu", "t'es qui", "atlas", "robot", "ia"]):
+    if "qui es-tu" in q or "qui es tu" in q or "t'es qui" in q or "atlas" in q:
         return {
-            "reply": "Je suis ATLAS, un assistant codé sur-mesure pour vous aider à explorer le profil et les compétences de Bonte sans vous perdre. Comment puis-je vous aider ?",
+            "reply": "ATLAS : module de navigation du portfolio. Pas un grand modèle de langage — un guide par règles qui connaît ce document par cœur.",
             "intent": "self",
         }
 
-    if any(term in q for term in ["disponible", "freelance", "remote", "recrut", "embauche", "mission"]):
+    if "disponible" in q or "freelance" in q or "remote" in q or "recrut" in q:
         return {
-            "reply": f"Bonte est ouvert à de nouveaux défis : missions freelance, contrats ou opportunités en télétravail/remote (Full-Stack, API, bases de données). Contactez-le directement par email : {PROFILE['email']}.",
+            "reply": f"{PROFILE['name'].split(' ')[0]} est ouvert aux missions freelance et postes remote — full-stack, API, architecture de données. Contact : {PROFILE['email']}.",
             "intent": "availability",
         }
 
     return {
         "reply": random.choice([
-            "Je ne suis pas certain d'avoir la réponse précise à cette question. N'hésitez pas à interroger ATLAS sur les 'projets', la 'stack', le 'parcours' ou à contacter Bonte directement.",
-            "Cette information n'est pas répertoriée dans mon index. Essayez avec un mot-clé comme 'projets', 'compétences' ou 'contact' !",
+            "Requête hors index. Essaie : \"projets\", \"stack\", \"parcours\" ou \"contact\".",
+            "Je n'ai pas ça en archive. Demande-moi les projets, la stack ou comment contacter Bonte.",
         ]),
         "intent": "fallback",
     }

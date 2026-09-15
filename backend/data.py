@@ -5,25 +5,23 @@ Source unique de vérité, consommée par l'API et (via /api/*) par le front Rea
 
 PROFILE = {
     "name": "Bonte Tabala Mangala",
-    "role": "Développeur Full Stack — React · TypeScript · Node.js · PostgreSQL",
-    "location": "Kinshasa (N'Sele), RD Congo",
+    "role": "Ingénieur logiciel — full-stack & architecture d'API",
+    "location": "Kinshasa / N'Sele, RD Congo",
     "email": "bontetabala4@gmail.com",
     "phone": "+243 995 608 233",
     "github": "https://github.com/bontetabala4",
-    "linkedin": "https://linkedin.com/in/bonté-tabala-mangala",
     "summary": (
-        "Ingénieur logiciel full stack spécialisé en React, TypeScript, Node.js/AdonisJS et PostgreSQL. "
-        "Expérience concrète en conception d'API REST et d'applications métier (gestion de stock, badges professionnels, "
-        "suivi en temps réel), de la modélisation de base de données jusqu'au déploiement. À l'aise en autonomie "
-        "sur des projets freelance comme en équipe, ouvert aux opportunités de missions et postes remote."
+        "Je conçois des systèmes pensés pour durer : schémas de données solides, "
+        "API REST claires, interfaces réactives. Basé à Kinshasa, je construis aussi "
+        "bien des outils métier pour de grandes structures que mes propres plateformes."
     ),
 }
 
 STACK = {
-    "Cœur de profil": ["React.js", "TypeScript", "Node.js", "AdonisJS", "PostgreSQL", "REST API"],
-    "Front-end": ["Next.js", "Tailwind CSS", "Bootstrap", "HTML/CSS", "Figma", "Vite"],
-    "Back-end & Données": ["Express.js", "Lucid ORM", "MySQL", "Authentication / Authorization", "RBAC", "Python / FastAPI"],
-    "DevOps & Outils": ["Git / GitHub", "Docker", "Linux", "Postman"],
+    "Front-end": ["React.js", "Next.js", "TypeScript", "Tailwind CSS", "Vite"],
+    "API & Back-end": ["Node.js", "AdonisJS", "REST API", "Authentication / RBAC", "Python / FastAPI"],
+    "Données": ["PostgreSQL", "MySQL", "Lucid ORM", "Modélisation SQL"],
+    "Outils & Infra": ["Git / GitHub", "Docker", "Linux", "Postman"],
 }
 
 PROJECTS = [
@@ -33,83 +31,25 @@ PROJECTS = [
         "client": "Agence Congolaise des Grands Travaux (ACGT)",
         "status": "EN PRODUCTION",
         "date": "Juil. 2026",
-        "role": "Développeur Full Stack autonome",
-        "context": "Application métier interne critique pour le suivi des stocks médicaux.",
         "description": (
-            "Module complet de gestion de stock : entrées, sorties, fournisseurs et inventaires — avec implémentation "
-            "d'une logique FEFO (First-Expired-First-Out) pour prioriser automatiquement les médicaments proches de leur péremption."
+            "Module complet de gestion de stock : entrées, sorties, fournisseurs, "
+            "inventaires — avec une logique FEFO pour prioriser automatiquement les "
+            "médicaments proches de leur péremption."
         ),
-        "highlights": [
-            "Conception et modélisation complète du schéma relationnel sous PostgreSQL.",
-            "Algorithme d'ordonnancement des sorties basé sur les dates de péremption (FEFO).",
-            "Interface utilisateur réactive en EJS / Bootstrap couplée à un backend Express.js robuste.",
-            "Gestion rigoureuse des inventaires, alertes de réapprovisionnement et traçabilité fournisseurs."
-        ],
-        "stack": ["JavaScript", "Node.js", "Express.js", "PostgreSQL", "EJS", "Bootstrap"],
-        "githubUrl": "https://github.com/bontetabala4",
+        "stack": ["Node.js", "Express", "PostgreSQL", "EJS", "Bootstrap"],
     },
     {
         "id": "badges",
-        "name": "Système de gestion des badges professionnels & QR",
+        "name": "Badges professionnels & QR",
         "client": "Agence Congolaise des Grands Travaux (ACGT)",
         "status": "EN PRODUCTION",
         "date": "Juin 2026",
-        "role": "Développeur Full Stack",
-        "context": "Système interne de sécurisation des accès et d'identification des agents de l'ACGT.",
         "description": (
-            "Application de bout en bout couvrant la génération automatique de numéros de badge et de QR codes, "
-            "la vérification par scan en temps réel, et l'impression de cartes professionnelles au format PVC."
+            "Application de gestion des badges des agents : génération automatique "
+            "des numéros et QR codes, vérification par scan, impression de cartes "
+            "professionnelles au format PVC."
         ),
-        "highlights": [
-            "Génération dynamique et sécurisée de QR codes encodant les métadonnées de l'agent.",
-            "Module d'authentification et de validation instantanée par lecteur/scan QR.",
-            "Mise en page vectorielle calibrée pour impression directe sur imprimantes PVC.",
-            "Architecture propre sous AdonisJS avec typage strict TypeScript et PostgreSQL."
-        ],
-        "stack": ["AdonisJS", "TypeScript", "PostgreSQL", "Tailwind CSS", "Lucid ORM"],
-        "githubUrl": "https://github.com/bontetabala4",
-    },
-    {
-        "id": "qr-generator",
-        "name": "QR Generator — Suivi de présence par QR Code",
-        "client": "Projet freelance",
-        "status": "LIVRÉ",
-        "date": "Nov. 2025 – Jan. 2026",
-        "role": "Lead Developer Full Stack",
-        "context": "Solution SaaS de pointage numérique pour entreprises et établissements scolaires.",
-        "description": (
-            "Application web de pointage automatisé avec génération de QR codes uniques et tableau de bord "
-            "en temps réel pour le suivi de l'historique des présences et des flux d'arrivées."
-        ),
-        "highlights": [
-            "Système de pointage digital éliminant les feuilles d'émargement physiques.",
-            "Dashboard analytique en temps réel : calcul automatique des retards et absences.",
-            "API REST haute performance en Node.js garantissant des scans sans latence.",
-            "Historique auditable et export des rapports de présence."
-        ],
-        "stack": ["Node.js", "PostgreSQL", "JavaScript", "REST API", "Tailwind CSS"],
-        "githubUrl": "https://github.com/bontetabala4",
-    },
-    {
-        "id": "twitter-clone",
-        "name": "Twitter Clone — Plateforme sociale full stack",
-        "client": "Kadea Academy",
-        "status": "RÉALISÉ",
-        "date": "Avr. 2025",
-        "role": "Développeur Full Stack",
-        "context": "Projet d'ingénierie logicielle simulant l'architecture complète d'un réseau social moderne.",
-        "description": (
-            "Reproduction des fonctionnalités clés de Twitter : publication de tweets, gestion des likes, "
-            "commentaires, fil d'actualités en direct, authentification sécurisée et profils utilisateurs."
-        ),
-        "highlights": [
-            "Gestion des sessions, authentification JWT et hashage de mots de passe.",
-            "Relations complexes en base de données : followers, retweets, likes et threads de commentaires.",
-            "Interface dynamique, responsive et soignée en React.js et Tailwind CSS.",
-            "Endpoints API modulaires et optimisés pour le rafraîchissement des flux."
-        ],
-        "stack": ["React.js", "Tailwind CSS", "Node.js", "Express", "PostgreSQL"],
-        "githubUrl": "https://github.com/bontetabala4",
+        "stack": ["AdonisJS", "TypeScript", "PostgreSQL", "Tailwind CSS"],
     },
     {
         "id": "kongowood-maps",

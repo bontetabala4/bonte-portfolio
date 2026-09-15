@@ -14,8 +14,6 @@ import os
 import re
 import smtplib
 import ssl
-import tempfile
-import threading
 from datetime import datetime, timezone
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -23,7 +21,6 @@ from pathlib import Path
 
 MESSAGES_FILE = Path(__file__).parent / "messages.json"
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
-MESSAGE_FILE_LOCK = threading.Lock()
 
 GMAIL_USER = os.environ.get("GMAIL_USER")
 GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
@@ -42,28 +39,15 @@ def save_message(name: str, email: str, subject: str, message: str) -> dict:
         "received_at": datetime.now(timezone.utc).isoformat(),
     }
 
-    with MESSAGE_FILE_LOCK:
-        existing = []
-        if MESSAGES_FILE.exists():
-            try:
-                loaded = json.loads(MESSAGES_FILE.read_text(encoding="utf-8"))
-                if isinstance(loaded, list):
-                    existing = loaded
-            except (json.JSONDecodeError, OSError):
-                existing = []
+    existing = []
+    if MESSAGES_FILE.exists():
+        try:
+            existing = json.loads(MESSAGES_FILE.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            existing = []
 
-        existing.append(entry)
-        payload = json.dumps(existing, indent=2, ensure_ascii=False)
-        with tempfile.NamedTemporaryFile(
-            "w",
-            encoding="utf-8",
-            dir=MESSAGES_FILE.parent,
-            delete=False,
-            suffix=".tmp",
-        ) as tmp:
-            tmp.write(payload)
-            tmp_path = Path(tmp.name)
-        os.replace(tmp_path, MESSAGES_FILE)
+    existing.append(entry)
+    MESSAGES_FILE.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
     return entry
 
 
@@ -81,7 +65,7 @@ def send_email(entry: dict) -> bool:
     msg["From"] = GMAIL_USER
     msg["To"] = GMAIL_USER
     msg["Reply-To"] = entry["email"]
-    msg["Subject"] = f"[Portfolio] {safe_header(entry['subject'])}"
+    msg["Subject"] = f"[Portfolio] {entry['subject']}"
 
     body = (
         f"Nouveau message depuis le formulaire de contact du portfolio.\n\n"
@@ -102,7 +86,3 @@ def send_email(entry: dict) -> bool:
     except Exception as exc:  # noqa: BLE001 — on log et on continue, l'email n'est pas critique
         print(f"[contact] Échec de l'envoi de l'email : {exc}")
         return False
-
-
-def safe_header(value: str) -> str:
-    return value.replace("\r", " ").replace("\n", " ").strip()

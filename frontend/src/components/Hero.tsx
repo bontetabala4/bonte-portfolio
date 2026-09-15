@@ -1,15 +1,13 @@
 import { motion } from "framer-motion";
-import { useTypewriter } from "../hooks/useTypewriter";
+import Name3D from "./Name3D";
 import type { Profile } from "../lib/types";
 
 export default function Hero({ profile }: { profile: Profile }) {
-  const { output: nameOut, done: nameDone } = useTypewriter(profile.name.toUpperCase(), 55, 400);
-
   return (
     <header id="top" className="relative overflow-hidden pb-28 pt-20 md:pt-28">
       <div className="scan-sweep" />
       <div className="mx-auto max-w-6xl px-6">
-        {/* ligne de boot */}
+        {/* boot sequence */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -20,12 +18,11 @@ export default function Hero({ profile }: { profile: Profile }) {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-cyan" />
           </span>
-          Connecté · Basé à {profile.location} · Disponible pour des missions
+          SYSTÈME EN LIGNE · PROFIL CHARGÉ · {profile.location.toUpperCase()}
         </motion.div>
 
         <h1 className="font-display text-[clamp(2.1rem,6vw,4.4rem)] font-black leading-[1.05] text-ink">
-          {nameOut}
-          {!nameDone && <span className="cursor-blink text-cyan">▌</span>}
+          <Name3D text={profile.name.toUpperCase()} startDelay={0.3} />
         </h1>
 
         <motion.p
@@ -56,13 +53,13 @@ export default function Hero({ profile }: { profile: Profile }) {
             href="#work"
             className="border border-cyan bg-cyan/10 px-6 py-3 font-medium tracking-wide text-cyan-soft transition-colors hover:bg-cyan/20"
           >
-            Voir mes projets
+            Voir les travaux
           </a>
           <a
             href={`mailto:${profile.email}`}
             className="border border-line px-6 py-3 font-medium tracking-wide text-ink/80 transition-colors hover:border-cyan/60 hover:text-ink"
           >
-            M'écrire directement
+            Écrire un mail
           </a>
           <a
             href={profile.github}
@@ -72,28 +69,20 @@ export default function Hero({ profile }: { profile: Profile }) {
           >
             GitHub ↗
           </a>
-          <a
-            href={profile.linkedin || "https://linkedin.com/in/bonté-tabala-mangala"}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border border-line px-6 py-3 font-medium tracking-wide text-ink/80 transition-colors hover:border-cyan/60 hover:text-ink"
-          >
-            LinkedIn ↗
-          </a>
         </motion.div>
 
-        {/* panneau d'infos rapides */}
+        {/* HUD readout panel */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 3.3, duration: 0.6 }}
-          className="hud-corners mt-16 grid max-w-2xl grid-cols-2 gap-px border border-line bg-line/40 font-mono text-xs sm:grid-cols-4"
+          className="hud-corners mt-16 grid max-w-xl grid-cols-2 gap-px border border-line bg-line/40 font-mono text-xs sm:grid-cols-4"
         >
           {[
-            ["Spécialité",   "React · Node · Postgres"],
-            ["Email",        profile.email],
-            ["GitHub",       "@bontetabala4"],
-            ["Basé à",       "Kinshasa · RDC"],
+            ["LOCALISATION", "KINSHASA · RDC"],
+            ["CONTACT", profile.email],
+            ["GITHUB", "@bontetabala4"],
+            ["RÉV.", "2026"],
           ].map(([label, value]) => (
             <div key={label} className="bg-panel px-3 py-3">
               <div className="text-cyan-soft/70">{label}</div>
@@ -105,4 +94,3 @@ export default function Hero({ profile }: { profile: Profile }) {
     </header>
   );
 }
-
