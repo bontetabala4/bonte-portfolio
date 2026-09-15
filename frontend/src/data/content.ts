@@ -6,6 +6,11 @@ export type Project = {
   date: string;
   description: string;
   stack: string[];
+  role?: string;
+  context?: string;
+  highlights?: string[];
+  demoUrl?: string;
+  githubUrl?: string;
 };
 
 export type TimelineItem = { when: string; title: string; org: string };
