@@ -8,7 +8,10 @@ from pydantic import BaseModel
 
 from data import PROFILE, STACK, PROJECTS, TIMELINE, EDUCATION
 from ai import answer
-from contact import is_valid_email, save_message, send_email
+from contact import is_valid_email, save_message, send_email, GMAIL_USER, GMAIL_APP_PASSWORD
+
+print(f"[startup] GMAIL_USER détecté : {'oui (' + GMAIL_USER + ')' if GMAIL_USER else 'NON'}", flush=True)
+print(f"[startup] GMAIL_APP_PASSWORD détecté : {'oui' if GMAIL_APP_PASSWORD else 'NON'}", flush=True)
 
 app = FastAPI(
     title="Portfolio API — Bonte Tabala Mangala",

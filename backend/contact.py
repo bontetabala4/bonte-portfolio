@@ -58,7 +58,7 @@ def send_email(entry: dict) -> bool:
     pas planter la requête — le message reste sauvegardé dans messages.json)."""
 
     if not GMAIL_USER or not GMAIL_APP_PASSWORD:
-        print("[contact] GMAIL_USER / GMAIL_APP_PASSWORD non configurés — email non envoyé.")
+        print("[contact] GMAIL_USER / GMAIL_APP_PASSWORD non configurés — email non envoyé.", flush=True)
         return False
 
     msg = MIMEMultipart()
@@ -82,7 +82,8 @@ def send_email(entry: dict) -> bool:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
             server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
             server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
+        print("[contact] Email envoyé avec succès.", flush=True)
         return True
     except Exception as exc:  # noqa: BLE001 — on log et on continue, l'email n'est pas critique
-        print(f"[contact] Échec de l'envoi de l'email : {exc}")
+        print(f"[contact] Échec de l'envoi de l'email : {exc}", flush=True)
         return False
