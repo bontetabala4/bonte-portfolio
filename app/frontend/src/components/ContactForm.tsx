@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sendContactMessage } from "../lib/api";
 
-type Status = "idle" | "sending" | "sent" | "mailto" | "error";
+type Status = "idle" | "sending" | "sent" | "saved" | "mailto" | "error";
 
 export default function ContactForm() {
   const [name, setName] = useState("");
@@ -37,8 +37,11 @@ export default function ContactForm() {
     setError("");
     const result = await sendContactMessage({ name, email, subject, message });
 
-    if (result.delivered && result.method === "api") {
+    if (result.delivered && result.method === "api" && result.emailed) {
       setStatus("sent");
+      reset();
+    } else if (result.delivered && result.method === "api") {
+      setStatus("saved");
       reset();
     } else if (result.method === "mailto") {
       setStatus("mailto");
@@ -143,6 +146,17 @@ export default function ContactForm() {
             className="mt-5 border border-amber/40 bg-amber/5 px-4 py-3 font-mono text-xs text-amber"
           >
             ✓ Ta messagerie s'est ouverte avec le message pré-rempli — il ne reste qu'à cliquer sur envoyer.
+          </motion.div>
+        )}
+        {status === "saved" && (
+          <motion.div
+            key="saved"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="mt-5 border border-amber/40 bg-amber/5 px-4 py-3 font-mono text-xs text-amber"
+          >
+            ✓ MESSAGE SAUVEGARDÉ — l'email automatique n'est pas configuré côté serveur.
           </motion.div>
         )}
         {status === "error" && (
