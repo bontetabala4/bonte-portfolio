@@ -1,10 +1,17 @@
+from dotenv import load_dotenv
+
+load_dotenv()  # charge backend/.env en local si présent — sans effet si absent (ex: en prod, où les variables sont définies directement sur l'hébergeur)
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from data import PROFILE, STACK, PROJECTS, TIMELINE, EDUCATION
 from ai import answer
-from contact import is_valid_email, save_message
+from contact import is_valid_email, save_message, send_email, GMAIL_USER, GMAIL_APP_PASSWORD
+
+print(f"[startup] GMAIL_USER détecté : {'oui (' + GMAIL_USER + ')' if GMAIL_USER else 'NON'}", flush=True)
+print(f"[startup] GMAIL_APP_PASSWORD détecté : {'oui' if GMAIL_APP_PASSWORD else 'NON'}", flush=True)
 
 app = FastAPI(
     title="Portfolio API — Bonte Tabala Mangala",
@@ -74,5 +81,6 @@ def contact(body: ContactBody):
     if not is_valid_email(body.email):
         raise HTTPException(status_code=400, detail="Adresse email invalide.")
 
-    save_message(body.name, body.email, body.subject, body.message)
-    return {"status": "ok"}
+    entry = save_message(body.name, body.email, body.subject, body.message)
+    emailed = send_email(entry)
+    return {"status": "ok", "emailed": emailed}
