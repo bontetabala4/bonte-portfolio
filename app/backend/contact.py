@@ -1,20 +1,29 @@
 """
-Stockage simple des messages envoyés depuis le formulaire de contact.
+Gestion des messages du formulaire de contact :
+1. sauvegarde locale dans messages.json (toujours, comme filet de sécurité)
+2. envoi d'un vrai email via Gmail SMTP, si les identifiants sont configurés
 
-Pas d'envoi d'email réel ici (ça demanderait des identifiants SMTP ou une clé
-d'API d'un service comme Resend/SendGrid, que je ne peux pas générer pour
-toi). Les messages sont simplement ajoutés à un fichier JSON local
-(`messages.json`, à côté de ce fichier) que tu peux consulter, ou brancher
-plus tard à un vrai envoi d'email — voir la note dans le README.
+Les identifiants Gmail viennent des variables d'environnement GMAIL_USER et
+GMAIL_APP_PASSWORD (voir .env.example). Si elles ne sont pas définies,
+l'envoi d'email est simplement ignoré (avec un message dans les logs) — le
+message reste quand même sauvegardé dans messages.json.
 """
 
 import json
+import os
 import re
+import smtplib
+import ssl
 from datetime import datetime, timezone
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from pathlib import Path
 
 MESSAGES_FILE = Path(__file__).parent / "messages.json"
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+
+GMAIL_USER = os.environ.get("GMAIL_USER")
+GMAIL_APP_PASSWORD = os.environ.get("GMAIL_APP_PASSWORD")
 
 
 def is_valid_email(email: str) -> bool:
@@ -40,3 +49,41 @@ def save_message(name: str, email: str, subject: str, message: str) -> dict:
     existing.append(entry)
     MESSAGES_FILE.write_text(json.dumps(existing, indent=2, ensure_ascii=False), encoding="utf-8")
     return entry
+
+
+def send_email(entry: dict) -> bool:
+    """Envoie l'entrée par email via Gmail SMTP. Retourne True si envoyé,
+    False si les identifiants ne sont pas configurés ou si l'envoi échoue
+    (dans ce cas, l'erreur est affichée dans les logs du serveur mais ne fait
+    pas planter la requête — le message reste sauvegardé dans messages.json)."""
+
+    if not GMAIL_USER or not GMAIL_APP_PASSWORD:
+        print("[contact] GMAIL_USER / GMAIL_APP_PASSWORD non configurés — email non envoyé.", flush=True)
+        return False
+
+    msg = MIMEMultipart()
+    msg["From"] = GMAIL_USER
+    msg["To"] = GMAIL_USER
+    msg["Reply-To"] = entry["email"]
+    msg["Subject"] = f"[Portfolio] {entry['subject']}"
+
+    body = (
+        f"Nouveau message depuis le formulaire de contact du portfolio.\n\n"
+        f"Nom : {entry['name']}\n"
+        f"Email : {entry['email']}\n"
+        f"Sujet : {entry['subject']}\n\n"
+        f"Message :\n{entry['message']}\n\n"
+        f"---\nRéponds directement à cet email : il partira à {entry['email']}."
+    )
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        context = ssl.create_default_context()
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as server:
+            server.login(GMAIL_USER, GMAIL_APP_PASSWORD)
+            server.sendmail(GMAIL_USER, GMAIL_USER, msg.as_string())
+        print("[contact] Email envoyé avec succès.", flush=True)
+        return True
+    except Exception as exc:  # noqa: BLE001 — on log et on continue, l'email n'est pas critique
+        print(f"[contact] Échec de l'envoi de l'email : {exc}", flush=True)
+        return False
