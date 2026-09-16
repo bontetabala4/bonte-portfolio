@@ -9,8 +9,6 @@ async function tryFetch<T>(path: string, fallback: T): Promise<T> {
     if (!res.ok) throw new Error(String(res.status));
     return (await res.json()) as T;
   } catch {
-    // Backend indisponible (pas encore lancé, ou déployé sans VITE_API_URL) :
-    // le front continue de fonctionner avec les données locales.
     return fallback;
   }
 }
@@ -21,8 +19,6 @@ export const getProjects = () => tryFetch("/api/projects", PROJECTS);
 export const getTimeline = () => tryFetch("/api/timeline", TIMELINE);
 export const getEducation = () => tryFetch("/api/education", EDUCATION);
 
-// Repli local d'ATLAS si le backend FastAPI n'est pas joignable —
-// même logique simple par mots-clés que backend/ai.py.
 function localAsk(question: string): string {
   const q = question.trim().toLowerCase();
   if (!q) return "Signal vide reçu. Pose-moi une question sur le parcours, les projets ou la stack de Bonte.";
@@ -83,7 +79,7 @@ export async function askAtlas(question: string): Promise<string> {
 }
 
 export type ContactPayload = { name: string; email: string; subject: string; message: string };
-export type ContactResult = { delivered: boolean; method: "api" | "mailto"; error?: string };
+export type ContactResult = { delivered: boolean; method: "api" | "mailto"; emailed?: boolean; error?: string };
 
 export async function sendContactMessage(payload: ContactPayload): Promise<ContactResult> {
   if (API_URL) {
@@ -95,13 +91,13 @@ export async function sendContactMessage(payload: ContactPayload): Promise<Conta
         signal: AbortSignal.timeout(5000),
       });
       if (res.ok) {
-        return { delivered: true, method: "api" };
+        const data = await res.json().catch(() => null);
+        return { delivered: true, method: "api", emailed: !!data?.emailed };
       }
       const data = await res.json().catch(() => null);
       return { delivered: false, method: "api", error: data?.detail || "Le serveur a refusé le message." };
     } catch {
-      // Backend injoignable : on retombe sur mailto ci-dessous, le message
-      // n'est jamais perdu silencieusement.
+      // Backend injoignable : on retombe sur mailto ci-dessous.
     }
   }
   const to = PROFILE.email;
